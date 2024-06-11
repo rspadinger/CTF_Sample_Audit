@@ -65,7 +65,7 @@ abstract contract MurkyBase {
                 if (node & 0x1 == 1) {
                     result[pos] = data[node - 1];
                 } else if (node + 1 == data.length) {
-                    //@audit wrong
+                    //node & 0x1 == 0 => last node (eg: 5th) has no neighbour to the right =>
                     result[pos] = bytes32(0);
                 } else {
                     result[pos] = data[node + 1];

@@ -8,7 +8,6 @@ import {OwnableUpgradeable} from "openzeppelin-contracts-upgradeable/contracts/a
 import {MerkleProofUpgradeable} from "openzeppelin-contracts-upgradeable/contracts/utils/cryptography/MerkleProofUpgradeable.sol";
 import {MulticallUpgradeable} from "./libraries/Multicall.sol";
 
-//@audit multicall not required
 contract HalbornNFT is
     Initializable,
     ERC721Upgradeable,
@@ -19,6 +18,7 @@ contract HalbornNFT is
     bytes32 public merkleRoot;
 
     uint256 public price;
+    //@audit-ok risk of overlap with Airdrop ID
     uint256 public idCounter;
 
     function initialize(
@@ -32,6 +32,8 @@ contract HalbornNFT is
 
         setMerkleRoot(merkleRoot_);
         setPrice(price_);
+
+        idCounter = 10000;
     }
 
     function setPrice(uint256 price_) public onlyOwner {
@@ -39,15 +41,16 @@ contract HalbornNFT is
         price = price_;
     }
 
-    //@audit access control missing => anyone can set merkleRoot & mint airdrop nfts
+    //@audit-ok access control missing => anyone can set merkleRoot & mint airdrop nfts
     function setMerkleRoot(bytes32 merkleRoot_) public {
         merkleRoot = merkleRoot_;
     }
 
     function mintAirdrops(uint256 id, bytes32[] calldata merkleProof) external {
-        //@audit ! is missing =>
-        require(_exists(id), "Token already minted");
+        //@audit-ok ! is missing =>
+        require(!_exists(id), "Token already minted");
 
+        //assertTrue(m.verifyProof(root, ALICE_PROOF_1, data[0]));
         bytes32 node = keccak256(abi.encodePacked(msg.sender, id));
         bool isValidProof = MerkleProofUpgradeable.verifyCalldata(
             merkleProof,
@@ -56,7 +59,6 @@ contract HalbornNFT is
         );
         require(isValidProof, "Invalid proof.");
 
-        //@audit risk of overlap with idCounter
         _safeMint(msg.sender, id, "");
     }
 
@@ -67,7 +69,6 @@ contract HalbornNFT is
             idCounter++;
         }
 
-        //@audit first nft is id=1
         _safeMint(msg.sender, idCounter, "");
     }
 

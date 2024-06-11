@@ -26,7 +26,7 @@ contract Merkle is MurkyBase {
                 mstore(0x0, left)
                 mstore(0x20, right)
             }
-            _hash := keccak256(0x0, 0x40) //@audit should be mload(0x20)
+            _hash := keccak256(0x0, 0x40) //offset, size
         }
     }
 }

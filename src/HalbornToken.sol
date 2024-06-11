@@ -7,7 +7,6 @@ import {UUPSUpgradeable} from "openzeppelin-contracts-upgradeable/contracts/prox
 import {OwnableUpgradeable} from "openzeppelin-contracts-upgradeable/contracts/access/OwnableUpgradeable.sol";
 import {MulticallUpgradeable} from "./libraries/Multicall.sol";
 
-//@audit multicall not required
 contract HalbornToken is
     Initializable,
     ERC20Upgradeable,
@@ -42,8 +41,8 @@ contract HalbornToken is
         _burn(account, amount);
     }
 
-    //@audit access control
+    //@audit-ok access control
     //https://medium.com/@pearliboy1/how-to-implement-an-upgradeable-smart-contract-with-uups-242c57f671ee
-    https://www.codehawks.com/finding/clsekzfk3000k86260zt5alu2
+    //https://www.codehawks.com/finding/clsekzfk3000k86260zt5alu2
     function _authorizeUpgrade(address) internal override {}
 }
